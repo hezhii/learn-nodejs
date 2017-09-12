@@ -33,3 +33,8 @@
 3. `eventEmitter.once()` 只处理事件一次。
 
 4. 出错时触发 `error` 事件，如果此事件没有被监听会抛出错误、退出进程。
+
+## 异常处理
+
+1. 回调中的异常是无法被 catch 住的。
+2. 使用 generator 或者 async 来代替 callback 进行异步编程，可以 catch 住 yield 和 await 操作时的异常。
