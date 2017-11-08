@@ -44,3 +44,28 @@
 2. 使用 generator 或者 async 来代替 callback 进行异步编程，可以 catch 住 yield 和 await 操作时的异常。
 
 ### 类型判断
+
+类型判断是 JavaScript 中一个比较麻烦的问题，通过阅读 loadsh 源码学习到了一些类型判断的方法，现将 js 类型判断相关的知识点记录下来。
+
+JavaScript 中的数据类型包括：null、undefined、number、string、boolean、object、function，其中 null、undefined、number、string、boolean 为原始类型，object 为复合类型，包括：Function Array Date等。
+
+#### == 和 === 的区别
+
+主要的区别在于 `==` 运算符在比较不同类型的数据时，会先将数据进行类型转换，然后再通过 `===` 进行比较。类型转换规则如下：
+
+- 原始类型（String/Number/Boolean/null/undefined）的数据会转换成数值类型再进行比较。
+- 对象与原始类型的数据进行比较时，对象会被转化为原始类型的值。
+
+```js
+undefined == null; // true
+undefined === null; //false
+```
+
+#### 常用类型判断方法
+
+1. 内置的一些判断方法，如判断是否是数组：`Array.isArray`。
+2. `typeof value` 方法可以返回对象的类型，可能的取值为：undefined、boolean、string、number、object、function。由于历史原因导致 `typeof null` 返回 `object`。
+3. `obj instanceof Object` 判断一个对象的原型链上是否存在一个某个构造函数的 prototype 属性，左边的操作数是对象实例，不是则返回 false；右边的操作数必须是对象或者构造器，否则会抛出异常。具体的原理参考[这篇博客](https://www.ibm.com/developerworks/cn/web/1306_jiangjj_jsinstanceof/)。
+3. `Object.prorotype.toString.call(value)` 可以输出对象的类型。
+
+在使用时需要的是: **typeof** 适合判断原始类型和 function，判断 null 和复杂类型时不准确，会都返回 object；在 IE6/7/8 上使用 `Object.prorotype.toString` 判断 null 或者 undefined 时会返回 `[object Object]`；**instanceof** 适合用来判断自定义对象。
