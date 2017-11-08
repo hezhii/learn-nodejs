@@ -38,13 +38,13 @@
 
 ### events
 
-1. 所有能触发事件的对象都是 EventEmitter 类的实例。
+所有能触发事件的对象都是 EventEmitter 类的实例。`eventEmitter.on()` 方法用于注册监听器，`eventEmitter.emit()` 方法用于触发事件。当 EventEmitter 对象触发一个事件时，所有绑定在该事件上的函数都被同步地调用，函数在调用时 this 关键字被设置为相应的 EventEmitter，如果不希望 this 指向 EventEmitter 实例，可以显示的 bind 或者使用箭头函数。
 
-2. `eventEmitter.on()` 方法用于注册监听器，`eventEmitter.emit()` 方法用于触发事件。
+EventListener 会按照监听器注册的顺序同步地调用所有监听器，参考 `events/this.js` 中的执行顺序。
 
-3. `eventEmitter.once()` 只处理事件一次。
+ 在 `newListener` 回调函数中, 一个监听器的名字如果和已有监听器名称相同, 则在被插入到 EventEmitter 实例的内部监听器数组时, 该监听器会被添加到其它同名监听器的前面，这并不会导致死循环。
 
-4. 出错时触发 `error` 事件，如果此事件没有被监听会抛出错误、退出进程。
+ **注意**：每个事件默认可以注册最多 10 个监听器，可以通过 `emitter.setMaxListeners(n)` 方法设置。
 
 ### 异常处理
 
