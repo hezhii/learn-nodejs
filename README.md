@@ -77,3 +77,50 @@ undefined === null; //false
 3. `Object.prorotype.toString.call(value)` 可以输出对象的类型。
 
 在使用时需要的是: **typeof** 适合判断原始类型和 function，判断 null 和复杂类型时不准确，会都返回 object；在 IE6/7/8 上使用 `Object.prorotype.toString` 判断 null 或者 undefined 时会返回 `[object Object]`；**instanceof** 适合用来判断自定义对象。
+
+### 模块
+
+Node.js 中一个文件被视为一个独立的模块，在执行模块代码之前，Node.js 会使用一个包装器对模块进行包装，因此模块内的本地变量是私有的。如果想要一个模块内定义的变量或方法在其他模块中使用，可以使用 **exports** 导出，它是 **module.exports** 的一个引用。
+
+1. 模块在第一次加载后会被缓存。
+2. 多次加载模块，模块内的代码不会重复执行。
+3. 删除 `require.cache` 对象中对应的键值对可以清除缓存。
+
+```js
+(function(exports, require, module, __filename, __dirname) {
+  // 模块代码
+});
+```
+
+#### 模块互相引用
+
+因为模块的缓存机制，但两个模块相互依赖的时并不会出现死循环而是会返回“部分完成”的对象。参考下面的代码：
+
+```js
+// a.js
+console.log('a 开始');
+exports.done = false;
+const b = require('./b.js');
+console.log('在 a 中，b.done = %j', b.done);
+exports.done = true;
+console.log('a 结束');
+
+
+// b.js
+console.log('b 开始');
+exports.done = false;
+const a = require('./a.js');
+console.log('在 b 中，a.done = %j', a.done);
+exports.done = true;
+console.log('b 结束');
+
+
+// index.js
+console.log('index 开始');
+const a = require('./a.js');
+const b = require('./b.js');
+console.log('在 index 中，a.done=%j，b.done=%j', a.done, b.done);
+
+```
+
+当在 b.js 中 `require('./a.js')` 时，并不会导致 a.js 中代码的执行，导致 a.js 再次引入了 b.js，进而导致死循环。而是直接返回了“部分”，即 `exports.done = false`。
